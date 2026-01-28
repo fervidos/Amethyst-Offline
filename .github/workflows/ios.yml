@@ -80,9 +80,7 @@ jobs:
           export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
           brew install ldid
 
-      - name: Patch files
-        run: |
-          gpatch ./Amethyst-iOS/Natives/MinecraftResourceDownloadTask.m MinecraftResourceDownloadTask.patch
+
 
       - name: Build for ${{ matrix.platform_name }}
         run: |
