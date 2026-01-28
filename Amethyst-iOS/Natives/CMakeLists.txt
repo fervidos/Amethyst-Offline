@@ -18,7 +18,8 @@ include_directories(
   "external/AFNetworking/UIKit+AFNetworking"
   "external/DBNumberedSlider/Classes"
   "external/NRFileManager"
-  "external/UnzipKit"
+  "external/UnzipKit/Source"
+  "external/UnzipKit/Lib/MiniZip"
   "external/fishhook"
   "external/lzma"
   "external/mesa"
@@ -84,6 +85,21 @@ target_link_libraries(AFNetworking
   "-framework Security"
   "-framework SystemConfiguration"
   "-framework UIKit"
+)
+
+# UnzipKit
+add_library(UnzipKit SHARED
+  external/UnzipKit/Source/UZKArchive.m
+  external/UnzipKit/Source/UZKFileInfo.m
+  external/UnzipKit/Source/Extensions/NSURL+UnzipKitExtensions.m
+  external/UnzipKit/Lib/MiniZip/ioapi.c
+  external/UnzipKit/Lib/MiniZip/mztools.c
+  external/UnzipKit/Lib/MiniZip/unzip.c
+  external/UnzipKit/Lib/MiniZip/zip.c
+)
+target_link_libraries(UnzipKit
+  "-framework Foundation"
+  "-framework CoreGraphics"
 )
 
 # MinecraftAccount JNI
@@ -183,6 +199,7 @@ endif()
 target_link_libraries(AngelAuraAmethyst
   PUBLIC AFNetworking
   lzma
+  UnzipKit
   "-F'${CMAKE_CURRENT_LIST_DIR}/build'"
   "-F'${CMAKE_CURRENT_LIST_DIR}/resources/Frameworks'"
   "-framework AltKit"
@@ -198,7 +215,6 @@ target_link_libraries(AngelAuraAmethyst
   "-framework QuartzCore"
   "-framework UIKit"
   "-framework UniformTypeIdentifiers"
-  "-framework UnzipKit"
   "-framework WebKit"
   "-weak_framework SafariServices"
 )
