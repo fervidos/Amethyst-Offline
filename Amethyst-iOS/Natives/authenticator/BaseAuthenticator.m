@@ -4,9 +4,14 @@
 #import "../ios_uikit_bridge.h"
 #import "../utils.h"
 
+
 @implementation BaseAuthenticator
 
 static BaseAuthenticator *current = nil;
+
++ (NSDictionary *)tokenDataOfProfile:(NSString *)profile {
+    return nil;
+}
 
 + (id)current {
     if (current == nil) {

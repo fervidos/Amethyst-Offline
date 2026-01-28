@@ -3,7 +3,7 @@
 
 @implementation ModpackUtils
 
-+ (void)archive:(UZKArchive *)archive extractDirectory:(NSString *)dir toPath:(NSString *)path error:(NSError *__autoreleasing*)error {
++ (void)archive:(UZKArchive *)archive extractDirectory:(NSString *)dir toPath:(NSString *)path error:(NSError *__autoreleasing *)error {
     [archive performOnFilesInArchive:^(UZKFileInfo *fileInfo, BOOL *stop) {
         if (![fileInfo.filename hasPrefix:dir] ||
             fileInfo.filename.length <= dir.length) {
@@ -38,10 +38,10 @@
         info[@"id"] = [NSString stringWithFormat:@"%@-forge-%@", minecraftVersion, dependency[@"forge"]];
     } else if (dependency[@"fabric-loader"]) {
         info[@"id"] = [NSString stringWithFormat:@"fabric-loader-%@-%@", dependency[@"fabric-loader"], minecraftVersion];
-        info[@"json"] = [NSString stringWithFormat:FabricUtils.endpoints[@"Fabric"][@"json"], minecraftVersion, dependency[@"fabric-loader"]];
+        info[@"json"] = [NSString stringWithFormat:(NSString *)FabricUtils.endpoints[@"Fabric"][@"json"], minecraftVersion, dependency[@"fabric-loader"]];
     } else if (dependency[@"quilt-loader"]) {
         info[@"id"] = [NSString stringWithFormat:@"quilt-loader-%@-%@", dependency[@"quilt-loader"], minecraftVersion];
-        info[@"json"] = [NSString stringWithFormat:FabricUtils.endpoints[@"Quilt"][@"json"], minecraftVersion, dependency[@"quilt-loader"]];
+        info[@"json"] = [NSString stringWithFormat:(NSString *)FabricUtils.endpoints[@"Quilt"][@"json"], minecraftVersion, dependency[@"quilt-loader"]];
     }
     return info;
 }
