@@ -4,3 +4,6 @@
 [submodule "Amethyst-iOS"]
 	path = Amethyst-iOS
 	url = https://github.com/AngelAuraMC/Amethyst-iOS
+[submodule "Amethyst-iOS/Natives/external/UnzipKit"]
+	path = Amethyst-iOS/Natives/external/UnzipKit
+	url = https://github.com/abbeycode/UnzipKit
