@@ -19,6 +19,7 @@ include_directories(
   "external/DBNumberedSlider/Classes"
   "external/NRFileManager"
   "external/UnzipKit/Source"
+  "external/UnzipKit/Source/Extensions"
   "external/UnzipKit/Lib/MiniZip"
   "external/fishhook"
   "external/lzma"
@@ -97,6 +98,7 @@ add_library(UnzipKit SHARED
   external/UnzipKit/Lib/MiniZip/unzip.c
   external/UnzipKit/Lib/MiniZip/zip.c
 )
+target_compile_options(UnzipKit PRIVATE -fmodules)
 target_link_libraries(UnzipKit
   "-framework Foundation"
   "-framework CoreGraphics"
