@@ -4,29 +4,52 @@
 @implementation ModpackUtils
 
 + (void)archive:(UZKArchive *)archive extractDirectory:(NSString *)dir toPath:(NSString *)path error:(NSError *__autoreleasing *)error {
+    NSMutableSet *createdDirectories = [NSMutableSet set];
+    
     [archive performOnFilesInArchive:^(UZKFileInfo *fileInfo, BOOL *stop) {
-        if (![fileInfo.filename hasPrefix:dir] ||
-            fileInfo.filename.length <= dir.length) {
-            return;
-        }
-        NSString *fileName = [fileInfo.filename substringFromIndex:dir.length+1];
-        NSString *destItemPath = [path stringByAppendingPathComponent:fileName];
-        NSString *destDirPath = fileInfo.isDirectory ? destItemPath : destItemPath.stringByDeletingLastPathComponent;
-        BOOL createdDir = [NSFileManager.defaultManager createDirectoryAtPath:destDirPath
-            withIntermediateDirectories:YES
-            attributes:nil error:error];
-        if (!createdDir) {
-            *stop = YES;
-            return;
-        } else if (fileInfo.isDirectory) {
-            return;
-        }
+        @autoreleasepool {
+            if (![fileInfo.filename hasPrefix:dir] ||
+                fileInfo.filename.length <= dir.length) {
+                return;
+            }
+            NSString *fileName = [fileInfo.filename substringFromIndex:dir.length+1];
+            NSString *destItemPath = [path stringByAppendingPathComponent:fileName];
+            NSString *destDirPath = fileInfo.isDirectory ? destItemPath : destItemPath.stringByDeletingLastPathComponent;
+            
+            if (![createdDirectories containsObject:destDirPath]) {
+                BOOL createdDir = [NSFileManager.defaultManager createDirectoryAtPath:destDirPath
+                    withIntermediateDirectories:YES
+                    attributes:nil error:error];
+                if (!createdDir) {
+                    *stop = YES;
+                    return;
+                }
+                [createdDirectories addObject:destDirPath];
+            }
+            
+            if (fileInfo.isDirectory) {
+                return;
+            }
 
-        NSData *data = [archive extractData:fileInfo error:error];
-        BOOL written = [data writeToFile:destItemPath options:NSDataWritingAtomic error:error];
-        *stop = !data || !written;
-        if (!*stop) {
-            NSLog(@"[ModpackDL] Extracted %@", fileInfo.filename);
+            NSOutputStream *outputStream = [NSOutputStream outputStreamToFileAtPath:destItemPath append:NO];
+            [outputStream open];
+            __block NSError *streamError = nil;
+
+            BOOL extracted = [archive extractBufferedDataFromFile:fileInfo.filename error:error action:^(NSData *dataChunk, CGFloat percentDecompressed) {
+                if (streamError) return;
+                
+                NSInteger written = [outputStream write:dataChunk.bytes maxLength:dataChunk.length];
+                if (written == -1) {
+                    streamError = outputStream.streamError;
+                }
+            }];
+            
+            [outputStream close];
+            
+            if (!extracted || streamError) {
+                if (error && streamError) *error = streamError;
+                *stop = YES;
+            }
         }
     } error:error];
 }
